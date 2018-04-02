@@ -39,8 +39,10 @@ This is experiment results when using left image as style representation and rig
 
 The experiment went through changing the beta values. The value of beta increases to the right.( beta = 1, 100, 1500)
 
-This is the experiment result when the below image is used as style representation.
+
+
 <img src = "input/picasso.jpg" height = "250px">
+This is the experiment result when the above image is used as style representation.
 Left image is used as content representation and right image is result image. The value of beta is fixed for all experiments (beta = 10)
 
 <img src = "input/napoleon.jpg" height = "250px"><img src = "output/nap_pica_beta10.png" height = "250px"><img src = "input/monalisa.jpg" height = "250px"><img src = "output/pica_mona_beta10.png" height = "250px">
