@@ -1,16 +1,6 @@
-
-# coding: utf-8
-
-# In[ ]:
-
-
 import tensorflow as tf
 from vgg19 import *
 import numpy as np
-
-
-# In[ ]:
-
 
 class image_transfer():
     

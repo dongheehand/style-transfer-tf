@@ -1,18 +1,9 @@
-
-# coding: utf-8
-
-# In[ ]:
-
-
 from vgg19 import *
 import cv2
 import tensorflow as tf
 import numpy as np
 import argparse
 import transfer
-
-
-# In[ ]:
 
 
 parser = argparse.ArgumentParser()
@@ -64,28 +55,16 @@ content = np.float32(content.reshape(1,height,width,c))
 vgg_const = Vgg19(vgg_path)
 vgg_var = Vgg19(vgg_path)
 
-
-# In[ ]:
-
-
 image_transfer = transfer.image_transfer(vgg_const = vgg_const, vgg_var = vgg_var,
                                         style_loss_layer = style_loss , content_loss_layer = content_loss,
                                         style_img = style, content_img = content, alpha = alpha, beta = beta,
                                         height = height , width = width, channel = c, max_epoch = epoch)
 loss, opt = image_transfer()
 
-
-# In[ ]:
-
-
 config = tf.ConfigProto()
 config.gpu_options.allow_growth=True
 sess = tf.Session(config=config)
 sess.run(tf.global_variables_initializer())
-
-
-# In[ ]:
-
 
 opt.minimize(sess)
 output = sess.run(image_transfer.output_img)
