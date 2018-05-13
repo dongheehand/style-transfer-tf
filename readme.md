@@ -2,12 +2,13 @@
 
 An implementation of image style transfer described in the paper using tensorflow.
 * [Image Style Transfer Using Convolutional Neural Networks](http://www.cv-foundation.org/openaccess/content_cvpr_2016/papers/Gatys_Image_Style_Transfer_CVPR_2016_paper.pdf)
+
 Published in CVPR 2016, written by Leon A. Gatys, Alexander S. Ecker and Matthias Bethge
 
 ## Requirement
 - Python 3.6.4
 - Tensorflow 1.5.0 
-- OpenCV 3.4
+- Pillow 5.0.0
 - Pretrained VGG19 file : [vgg19.npy](https://mega.nz/#!xZ8glS6J!MAnE91ND_WyfZ_8mvkuSa2YcA7q-1ehfSm-Q1fxOvvs)
 
 ## Configuration
@@ -50,7 +51,7 @@ Left image is used as content representation and right image is result image. Th
 
 
 ## Comments
-If you have any questions or comments on my codes, please email to me. [son1113@snu.ac.kr](son1113@snu.ac.kr)
+If you have any questions or comments on my codes, please email to me. [son1113@snu.ac.kr](mailto:son1113@snu.ac.kr)
 
 ## References
 
@@ -59,5 +60,5 @@ I refer to some source codes for my implementation
 [1]. https://github.com/hwalsuklee/tensorflow-style-transfer
 
 [2]. https://github.com/machrisaa/tensorflow-vgg
-* vgg19.py is fixed version for my implementation from [2]
+* vgg19.py is fixed for my implementation from [2].
 

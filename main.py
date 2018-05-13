@@ -1,10 +1,9 @@
-from vgg19 import *
-import cv2
 import tensorflow as tf
 import numpy as np
 import argparse
 import transfer
-
+from PIL import Image
+from transfer import style_transfer_net
 
 parser = argparse.ArgumentParser()
 
@@ -15,60 +14,61 @@ parser.add_argument("--content_image_path",type = str,
                     help = "File path of content image", default = "input/tubingen.jpg")
 parser.add_argument("--output_image_path",type = str, 
                     help = "File path of result image", default = "output/result.png")
-parser.add_argument("--alpha",type = float, 
-                    help = "The coefficient of content loss", default = 0.001)
-parser.add_argument("--beta",type = float, 
-                    help = "The coefficient of style loss", default = 500.0)
-parser.add_argument("--vgg_model_path",type = str,
-                    help = "File path of pre-trained vgg19 model", default = "vgg19/vgg19.npy")
-parser.add_argument("--content_loss_layer",type = str,
-                    help = "Layer(s) included content representation", default = ['conv4_2'])
-parser.add_argument("--style_loss_layer",type = str,
-                    help = "Layer(s) included style representation", default = ['relu1_1', 'relu2_1', 'relu3_1', 'relu4_1', 'relu5_1'])
 parser.add_argument("--height",type = int,
                     help = "The height of output image", default = 384)
 parser.add_argument("--width",type = int,
                     help = "The width of output image", default = 512)
+parser.add_argument("--vgg_model_path",type = str,
+                    help = "File path of pre-trained vgg19 model", default = "vgg19/vgg19.npy")
+parser.add_argument("--style_loss_layer",type = str,
+                    help = "Layer(s) included style representation", default = ['relu1_1', 'relu2_1', 'relu3_1', 'relu4_1', 'relu5_1'])
+parser.add_argument("--content_loss_layer",type = str,
+                    help = "Layer(s) included content representation", default = ['conv4_2'])
+parser.add_argument("--alpha",type = float, 
+                    help = "The coefficient of content loss", default = 0.001)
+parser.add_argument("--beta",type = float, 
+                    help = "The coefficient of style loss", default = 10.0)
 parser.add_argument("--epoch",type = int,
                     help = "The number of epoch", default = 2000)
 
 args = parser.parse_args()
 
-style = cv2.cvtColor(cv2.imread(args.style_image_path),cv2.COLOR_BGR2RGB)
-content = cv2.cvtColor(cv2.imread(args.content_image_path),cv2.COLOR_BGR2RGB)
-output_path = args.output_image_path
-alpha = args.alpha
-beta = args.beta
-vgg_path = args.vgg_model_path
-content_loss = args.content_loss_layer
-style_loss = args.style_loss_layer
-height = args.height
-width = args.width
-epoch = args.epoch
-c = 3
+conf = {}
+conf['style_image_path'] = args.style_image_path
+conf['content_image_path'] = args.content_image_path
+conf['output_image_path'] = args.output_image_path
+conf['height'] = args.height
+conf['width'] = args.width
+conf['vgg_model_path'] = args.vgg_model_path
+conf['style_loss_layer'] = args.style_loss_layer
+conf['content_loss_layer'] = args.content_loss_layer
+conf['alpha'] = args.alpha
+conf['beta'] = args.beta
+conf['epoch'] = args.epoch
+conf['channel'] = 3
 
-style = cv2.resize(style,(width,height),interpolation = cv2.INTER_LANCZOS4)
-content = cv2.resize(content,(width,height),interpolation = cv2.INTER_LANCZOS4)
+style_image = Image.open(conf['style_image_path'])
+content_image = Image.open(conf['content_image_path'])
 
-style = np.float32(style.reshape(1,height,width,c))
-content = np.float32(content.reshape(1,height,width,c))
-vgg_const = Vgg19(vgg_path)
-vgg_var = Vgg19(vgg_path)
+style_image = style_image.resize((conf['width'], conf['height']), Image.LANCZOS)
+content_image = content_image.resize((conf['width'],conf['height']), Image.LANCZOS)
 
-image_transfer = transfer.image_transfer(vgg_const = vgg_const, vgg_var = vgg_var,
-                                        style_loss_layer = style_loss , content_loss_layer = content_loss,
-                                        style_img = style, content_img = content, alpha = alpha, beta = beta,
-                                        height = height , width = width, channel = c, max_epoch = epoch)
-loss, opt = image_transfer()
+style_image = np.expand_dims(np.array(style_image), axis = 0)
+content_image = np.expand_dims(np.array(content_image), axis = 0)
+
+transfer_net = style_transfer_net(conf)
+transfer_net.build_graph()
 
 config = tf.ConfigProto()
-config.gpu_options.allow_growth=True
-sess = tf.Session(config=config)
-sess.run(tf.global_variables_initializer())
+config.gpu_options.allow_growth = True
+sess = tf.Session(config = config)
+sess.run(tf.global_variables_initializer(), feed_dict = {transfer_net.content_img : content_image})
 
-opt.minimize(sess)
-output = sess.run(image_transfer.output_img)
-output = output[0]
-cliped_output = np.clip(output,0.0,255.0)
-cv2.imwrite(output_path, cv2.cvtColor(cliped_output,cv2.COLOR_RGB2BGR))
+transfer_net.opt.minimize(sess, feed_dict = {transfer_net.style_img : style_image, transfer_net.content_img : content_image})
+
+output = sess.run(transfer_net.output_img)
+output = np.clip(output[0], 0, 255)
+output = output.astype(np.uint8)
+output = Image.fromarray(output)
+output.save(conf['output_image_path'])
 
