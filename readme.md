@@ -60,5 +60,5 @@ I refer to some source codes for my implementation
 [1]. https://github.com/hwalsuklee/tensorflow-style-transfer
 
 [2]. https://github.com/machrisaa/tensorflow-vgg
-* vgg19.py is fixed for my implementation from [2].
+* vgg19.py is fixed for my implementation.
 
