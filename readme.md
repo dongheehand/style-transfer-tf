@@ -28,7 +28,7 @@ Published in CVPR 2016, written by Leon A. Gatys, Alexander S. Ecker and Matthia
 ## How to Run
 1) Download pretrained VGG19 file [vgg19.npy](https://mega.nz/#!xZ8glS6J!MAnE91ND_WyfZ_8mvkuSa2YcA7q-1ehfSm-Q1fxOvvs)
 2) Move pretrained VGG19 file to directory 'vgg19'
-3) python run_main.py --output_image_path  *"output_img_path"*  --style_image_path *"style_img_path"* --content_image_path *"content_img_path"*
+3) python main.py --output_image_path  *"output_img_path"*  --style_image_path *"style_img_path"* --content_image_path *"content_img_path"*
 
 ## Results
 This is experiment results when using left image as style representation and right image as content representation.
